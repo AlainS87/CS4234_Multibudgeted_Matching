@@ -1,0 +1,28 @@
+{
+  "m": 50,
+  "k": 3,
+  "seed": 2025,
+
+  "graph": {
+    "type": "general",
+    "num_vertices": 40
+  },
+
+  "value": {
+    "dist": "lognormal",
+    "mean": 0.0,
+    "sigma": 0.8,
+    "min": 1.0,
+    "max": 50.0
+  },
+
+  "weights": [
+    { "dist": "uniform", "low": 1.0, "high": 10.0 },
+    { "dist": "int_uniform", "low": 1, "high": 6 },
+    { "dist": "normal_pos", "mean": 5.0, "std": 2.0, "max": 12.0 }
+  ],
+
+  "budgets": {
+    "fraction_of_sum": 0.6
+  }
+}
