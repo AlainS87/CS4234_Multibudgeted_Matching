@@ -22,8 +22,6 @@ if __name__ == "__main__":
         print(f"left = {inst.num_left}, right = {inst.num_right}")
     print("budgets:", inst.budgets)
     print("first 5 edges:", inst.edges[:5])
-    print("first 5 values:", inst.values[:5])
-    print("first edge weights:", inst.weights[0] if inst.weights else [])
 
     out = Path(__file__).parent / "mbm_instance.json"
     with open(out, "w", encoding="utf-8") as f:

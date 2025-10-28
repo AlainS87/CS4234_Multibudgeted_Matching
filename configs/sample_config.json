@@ -1,19 +1,20 @@
 {
-  "m": 50,
+  "m": 40,
   "k": 3,
   "seed": 2025,
 
   "graph": {
     "type": "general",
-    "num_vertices": 40
+    "num_vertices": 20
   },
 
   "value": {
-    "dist": "lognormal",
-    "mean": 0.0,
-    "sigma": 0.8,
-    "min": 1.0,
-    "max": 50.0
+    "dist": "normal_pos",
+    "mean": 30,
+    "std": 20.0,
+    "min": 10,
+    "max": 50,
+    "integer": true
   },
 
   "weights": [
@@ -23,6 +24,6 @@
   ],
 
   "budgets": {
-    "fraction_of_sum": 0.6
+    "fraction_of_sum": 0.2
   }
 }

@@ -91,28 +91,10 @@ class mBm:
     # ---- main ----
     def generate_from_config(self, config: Dict[str, Any]) -> MBMInstance:
         """
-        Generate one mBm instance (graph + edge attributes) from a config dict.
-
-        Expected config keys (summary)
-        ------------------------------
-        m : int                    # number of edges
-        k : int                    # number of budget dims
-        seed : int (optional)
-
-        graph:
-          type: "bipartite" or "general"
-          if bipartite:
-            num_left: int
-            num_right: int
-          if general:
-            num_vertices: int
-
-        value:   {dist: ..., ...}
-        weights: [ {dist: ...}, ..., ] length k
-
-        budgets:
-          explicit: [w1, ..., wk]        # OR
-          fraction_of_sum: float in (0, 1.5]
+        Generate one mBm instance with per-edge attributes:
+        edges: [ {"u": int, "v": int, "value": float, "weights": [float, ...]}, ... ]
+        Other top-level fields:
+        graph_type, num_vertices, num_left/num_right (if bipartite), k, budgets
         """
         m, k, value_spec, weights_specs, budgets_cfg, seed, graph_cfg = validate_and_prepare(config)
         if seed is not None:
@@ -122,34 +104,45 @@ class mBm:
         if gtype == "bipartite":
             L = int(graph_cfg["num_left"])
             R = int(graph_cfg["num_right"])
-            num_vertices, edges = self._gen_edges_bipartite(L, R, m)
+            num_vertices, edge_pairs = self._gen_edges_bipartite(L, R, m)  # [(u,v)]
             num_left, num_right = L, R
         else:
             V = int(graph_cfg["num_vertices"])
-            edges = self._gen_edges_general(V, m)
+            edge_pairs = self._gen_edges_general(V, m)  # [(u,v)]
             num_vertices = V
             num_left = num_right = None  # not applicable
 
-        # Edge values and weights
+        # --- Sample per-edge value and k-dim weights ---
         values: List[float] = [float(sample_one(value_spec)) for _ in range(m)]
         weights: List[List[float]] = [
             [float(sample_one(weights_specs[t])) for t in range(k)]
             for _ in range(m)
         ]
 
+        # --- Budgets from weights (same as before) ---
         budgets = self._compute_budgets(m, k, weights, weights_specs, budgets_cfg)
 
+        # --- Assemble per-edge dicts: {"u","v","value","weights"} ---
+        edges_attrs: List[Dict[str, Any]] = []
+        for i, (u, v) in enumerate(edge_pairs):
+            edges_attrs.append({
+                "u": int(u),
+                "v": int(v),
+                "value": values[i],
+                "weights": [float(w) for w in weights[i]],
+            })
+
+        # --- Return MBMInstance (edges now carry attributes) ---
         return MBMInstance(
             graph_type=gtype,
             num_vertices=num_vertices,
             num_left=num_left,
             num_right=num_right,
-            edges=edges,
+            edges=edges_attrs,   # ← 这里现在是 per-edge dict 列表
             k=k,
-            values=values,
-            weights=weights,
-            budgets=budgets,
+            budgets=budgets,     # 顶层仍保留 budgets
         )
+
 
     def generate_from_file(self, path: str) -> MBMInstance:
         from .config import load_config

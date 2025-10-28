@@ -5,6 +5,15 @@ from typing import List, Dict, Any, Tuple, Literal, Optional
 
 GraphType = Literal["bipartite", "general"]
 
+@dataclass(frozen=True)
+class Edge:
+    """
+    An undirected edge (u,v) with value and k-dimensional weights.
+    """
+    u: int
+    v: int
+    value: int
+    weights: Tuple[int, ...]  # k-dimensional nonnegative integer weights
 
 @dataclass
 class MBMInstance:
@@ -35,10 +44,8 @@ class MBMInstance:
     """
     graph_type: GraphType
     num_vertices: int
-    edges: List[Tuple[int, int]]
+    edges: List[Edge]
     k: int
-    values: List[float]
-    weights: List[List[float]]
     budgets: List[float]
     num_left: Optional[int] = None
     num_right: Optional[int] = None
@@ -51,7 +58,5 @@ class MBMInstance:
             "num_right": self.num_right,
             "edges": self.edges,
             "k": self.k,
-            "values": self.values,
-            "weights": self.weights,
             "budgets": self.budgets,
         }
