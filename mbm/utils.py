@@ -40,6 +40,9 @@ def sample_one(spec: Dict[str, Any]) -> float:
 
     else:
         raise ValueError(f"Unsupported distribution: {d}")
+    
+    if spec.get("integer", False):
+        x = int(round(x))
 
     return clip(x, spec.get("min"), spec.get("max"))
 
