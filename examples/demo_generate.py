@@ -9,7 +9,7 @@ sys.path.insert(0, str(project_root))
 from mbm import mBm, load_config
 
 if __name__ == "__main__":
-    cfg_path = Path(__file__).parent.parent / "configs" / "sample_config.json"
+    cfg_path = Path(__file__).parent.parent / "configs" / "mbm_instance_config.json"
     config = load_config(cfg_path)
 
     gen = mBm()
